@@ -22,11 +22,7 @@
 
   <a class="la-skip-link" href="#contenido">Saltar al contenido</a>
 
-  <!-- =====================================================
-       NAVBAR — transparente → oscuro al scrollear
-       Bootstrap: navbar navbar-expand-lg fixed-top
-       Custom: la-navbar, la-brand, la-nav-link
-       ===================================================== -->
+  <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg fixed-top la-navbar" id="siteNav">
     <div class="container">
       <a class="navbar-brand la-brand" href="#inicio">
@@ -53,10 +49,7 @@
 
   <main id="contenido">
 
-    <!-- ===================================================
-         HERO — Bootstrap: row align-items-end,
-           col-lg-7, col-lg-5 d-none d-lg-block
-         =================================================== -->
+    <!-- HERO -->
     <section class="la-hero" id="inicio">
       <div class="la-hero-bg" aria-hidden="true"></div>
       <div class="la-hero-overlay" aria-hidden="true"></div>
@@ -96,9 +89,7 @@
       </div>
     </section>
 
-    <!-- ===================================================
-         ÁREAS DE PRÁCTICA — Bootstrap: row g-3, col-lg-4 col-md-6
-         =================================================== -->
+    <!-- ÁREAS DE PRÁCTICA -->
     <section class="la-section la-areas" id="areas">
       <div class="container">
         <div class="row align-items-end mb-5">
@@ -163,9 +154,7 @@
       </div>
     </section>
 
-    <!-- ===================================================
-         ESTUDIO — Bootstrap: row align-items-center g-5
-         =================================================== -->
+    <!-- ESTUDIO -->
     <section class="la-about">
       <div class="container">
         <div class="row align-items-center g-5">
@@ -190,10 +179,7 @@
       </div>
     </section>
 
-    <!-- ===================================================
-         CONSULTA DE EXPEDIENTE — Funcionalidad clave
-         Bootstrap: row align-items-center g-5, col-lg-6
-         =================================================== -->
+    <!-- CONSULTA DE EXPEDIENTE -->
     <section class="la-consulta" id="consulta">
       <div class="container">
         <div class="row align-items-center g-5">
@@ -236,9 +222,7 @@
       </div>
     </section>
 
-    <!-- ===================================================
-         HONORARIOS — Bootstrap: row g-3, col-lg-4 col-md-8
-         =================================================== -->
+    <!-- HONORARIOS -->
     <section class="la-section la-honorarios" id="honorarios">
       <div class="container">
         <div class="text-center mb-5">
@@ -282,9 +266,7 @@
       </div>
     </section>
 
-    <!-- ===================================================
-         CONTACTO — Bootstrap: row g-5, col-lg-5, col-lg-7
-         =================================================== -->
+    <!-- CONTACTO -->
     <section class="la-section la-contact" id="contacto">
       <div class="container">
         <div class="row g-5">
@@ -344,6 +326,80 @@
         </div>
       </div>
     </section>
+
+    <!-- ========================================================== -->
+    <!-- ACCIÓN 1: NUEVA SECCIÓN DE GESTIÓN DE CLIENTES (SPRINT 1)  -->
+    <!-- ========================================================== -->
+    <section style="background-color: #f8f9fa; padding: 4rem 0; margin-top: 2rem;">
+      <div class="container">
+        <div class="text-center mb-5">
+          <span style="color: #666; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Gestión Interna</span>
+          <h2 style="color: #2c3e50; margin-top: 0.5rem;">Registro de Clientes</h2>
+        </div>
+        
+        <div class="row g-4">
+          <!-- Formulario -->
+          <div class="col-lg-5">
+            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+              <h4 style="margin-bottom: 1.5rem; color: #2c3e50;">Nuevo Cliente</h4>
+              <form id="formCliente" novalidate>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #555;">Nombre completo</label>
+                  <input type="text" class="form-control" id="cliNombre" required 
+                         style="width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #555;">DNI (8 dígitos)</label>
+                  <input type="text" class="form-control" id="cliDni" maxlength="8" required 
+                         style="width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #555;">Teléfono (11-XXXX-XXXX)</label>
+                  <input type="text" class="form-control" id="cliTel" placeholder="11-1234-5678" required 
+                         style="width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #555;">Email</label>
+                  <input type="email" class="form-control" id="cliEmail" required 
+                         style="width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <button type="submit" 
+                        style="width: 100%; padding: 0.75rem; background: #3498db; color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">
+                  Agregar Cliente
+                </button>
+                <p id="msgCliente" style="margin-top: 1rem; text-align: center; font-size: 0.9rem;"></p>
+              </form>
+            </div>
+          </div>
+
+          <!-- Tabla -->
+          <div class="col-lg-7">
+            <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+              <h4 style="margin-bottom: 1.5rem; color: #2c3e50;">
+                Clientes Registrados 
+                <span style="background: #95a5a6; color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem;" id="contadorClientes">0</span>
+              </h4>
+              <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                  <thead>
+                    <tr style="background: #f8f9fa; border-bottom: 2px solid #ddd;">
+                      <th style="padding: 0.75rem; text-align: left; color: #555;">Nombre</th>
+                      <th style="padding: 0.75rem; text-align: left; color: #555;">DNI</th>
+                      <th style="padding: 0.75rem; text-align: left; color: #555;">Teléfono</th>
+                      <th style="padding: 0.75rem; text-align: left; color: #555;">Email</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tablaClientes">
+                    <tr><td colspan="4" style="padding: 2rem; text-align: center; color: #999;">No hay clientes registrados aún.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- FIN ACCIÓN 1 -->
 
   </main>
 

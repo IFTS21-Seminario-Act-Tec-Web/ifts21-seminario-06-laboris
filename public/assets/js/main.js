@@ -1,16 +1,10 @@
 // ============================================================
 // LABORIS — main.js
-//
-//   1. Año dinámico
-//   2. Navbar: transparente → oscuro al scrollear
-//   3. Botón "volver arriba"
-//   4. Sección activa (IntersectionObserver)
-//   5. CONSULTA DE EXPEDIENTE — funcionalidad clave del modelo
-//   6. Formulario de contacto
 // ============================================================
 
 "use strict";
 
+// 1. Año dinámico
 document.getElementById('year').textContent = new Date().getFullYear();
 
 const siteNav   = document.getElementById('siteNav');
@@ -25,7 +19,7 @@ updateScrollState();
 
 backToTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-// IntersectionObserver — sección activa
+// 2. Sección activa (IntersectionObserver)
 const navLinks = document.querySelectorAll('.la-nav-link[data-section]');
 const sections = document.querySelectorAll('section[id]');
 
@@ -41,18 +35,7 @@ const observer = new IntersectionObserver((entries) => {
 sections.forEach(s => observer.observe(s));
 
 
-// ─── CONSULTA DE EXPEDIENTE ───────────────────────────────────
-//
-// El usuario ingresa su número de expediente judicial.
-// El JS devuelve un estado simulado.
-//
-// PRÓXIMO PASO (etapa backend):
-//   const res = await fetch(`/api/expediente/${numero}`);
-//   const data = await res.json();
-//
-// El endpoint FastAPI en src/routes/contact.py devolverá:
-// { numero, estado, etapa, ultima_actuacion, fecha }
-
+// ── CONSULTA DE EXPEDIENTE ───────────────────────────────────
 const expedienteInput   = document.getElementById('expedienteInput');
 const consultarBtn      = document.getElementById('consultarBtn');
 const consultaResultado = document.getElementById('consultaResultado');
@@ -124,7 +107,7 @@ consultarBtn?.addEventListener('click', () => {
 expedienteInput?.addEventListener('keydown', e => { if (e.key === 'Enter') consultarBtn.click(); });
 
 
-// ─── FORMULARIO DE CONTACTO ───────────────────────────────────
+// ── FORMULARIO DE CONTACTO ───────────────────────────────────
 const contactForm = document.getElementById('contactForm');
 const formMessage  = document.getElementById('formMessage');
 
@@ -134,3 +117,68 @@ contactForm?.addEventListener('submit', event => {
   formMessage.textContent = '✓ Consulta recibida. Te respondemos a la brevedad. Primera consulta sin cargo.';
   contactForm.reset();
 });
+
+
+// ============================================================
+// ACCIÓN 2: LÓGICA DE GESTIÓN DE CLIENTES (SPRINT 1)
+// ============================================================
+let clientes = [];
+
+const formCliente = document.getElementById('formCliente');
+const msgCliente = document.getElementById('msgCliente');
+const tablaClientes = document.getElementById('tablaClientes');
+const contadorClientes = document.getElementById('contadorClientes');
+
+function renderizarClientes() {
+  contadorClientes.textContent = clientes.length;
+  
+  if (clientes.length === 0) {
+    tablaClientes.innerHTML = '<tr><td colspan="4" style="padding: 2rem; text-align: center; color: #999;">No hay clientes registrados aún.</td></tr>';
+    return;
+  }
+
+  tablaClientes.innerHTML = clientes.map(c => `
+    <tr>
+      <td style="padding: 0.75rem; border-bottom: 1px solid #eee;">${c.nombre}</td>
+      <td style="padding: 0.75rem; border-bottom: 1px solid #eee;">${c.dni}</td>
+      <td style="padding: 0.75rem; border-bottom: 1px solid #eee;">${c.telefono}</td>
+      <td style="padding: 0.75rem; border-bottom: 1px solid #eee;">${c.email}</td>
+    </tr>
+  `).join('');
+}
+
+formCliente?.addEventListener('submit', event => {
+  event.preventDefault();
+  msgCliente.textContent = '';
+  msgCliente.style.color = '';
+
+  const nombre = document.getElementById('cliNombre').value.trim();
+  const dni = document.getElementById('cliDni').value.trim();
+  const telefono = document.getElementById('cliTel').value.trim();
+  const email = document.getElementById('cliEmail').value.trim();
+
+  // Validaciones (Criterios de aceptación de Cristina)
+  if (!nombre) return mostrarError('El nombre es obligatorio.');
+  if (!/^\d{8}$/.test(dni)) return mostrarError('El DNI debe tener exactamente 8 dígitos numéricos.');
+  if (!/^11-\d{4}-\d{4}$/.test(telefono)) return mostrarError('El teléfono debe tener formato 11-XXXX-XXXX.');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return mostrarError('Ingresá un email válido.');
+
+  if (clientes.some(c => c.dni === dni)) {
+    return mostrarError('Ya existe un cliente con ese DNI.');
+  }
+
+  clientes.push({ nombre, dni, telefono, email });
+  renderizarClientes();
+  
+  msgCliente.textContent = '✓ Cliente agregado correctamente.';
+  msgCliente.style.color = 'green';
+  formCliente.reset();
+});
+
+function mostrarError(msg) {
+  msgCliente.textContent = `⚠ ${msg}`;
+  msgCliente.style.color = 'red';
+}
+
+renderizarClientes();
+// FIN ACCIÓN 2
