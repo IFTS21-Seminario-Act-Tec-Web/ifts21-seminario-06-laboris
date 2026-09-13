@@ -51,6 +51,7 @@ HTML + Bootstrap + CSS + JS
 ```
 
 ## Etapa 1 — sitio estático
+Prueba de Pull Request por Cristina (PO) - Sprint 2
 
 Abrir `public/index.html` en el navegador o utilizar Live Server. En esta etapa el objetivo es comprender la estructura existente, personalizarla y trabajar con Git mediante ramas y Pull Requests.
 
