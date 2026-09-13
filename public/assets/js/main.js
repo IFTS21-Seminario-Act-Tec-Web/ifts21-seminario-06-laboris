@@ -1,19 +1,117 @@
 // ============================================================
 // LABORIS — main.js
-//
-//   1. Año dinámico
-//   2. Navbar: transparente → oscuro al scrollear
-//   3. Botón "volver arriba"
-//   4. Sección activa (IntersectionObserver)
-//   5. CONSULTA DE EXPEDIENTE — funcionalidad clave del modelo
-//   6. Formulario de contacto
+// [JOSÉ] Implementación: Toggle de tema y Validación en tiempo real
 // ============================================================
 
 "use strict";
 
 document.getElementById('year').textContent = new Date().getFullYear();
 
-const siteNav   = document.getElementById('siteNav');
+// ─── 1. LÓGICA DEL TOGGLE DE TEMA (JOSÉ) ─────────────────────
+const btnToggle = document.getElementById('btnToggleTema');
+const iconoTema = document.getElementById('iconoTema');
+
+// Función para actualizar el ícono según el tema
+function actualizarIcono(theme) {
+  if (theme === 'dark') {
+    iconoTema.classList.replace('bi-moon-stars-fill', 'bi-sun-fill');
+    btnToggle.setAttribute('aria-label', 'Cambiar a modo claro');
+  } else {
+    iconoTema.classList.replace('bi-sun-fill', 'bi-moon-stars-fill');
+    btnToggle.setAttribute('aria-label', 'Cambiar a modo oscuro');
+  }
+}
+
+// Inicializar ícono al cargar la página (el atributo data-theme ya está en el HTML por el script del head)
+const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+actualizarIcono(currentTheme);
+
+// Event listener para el botón
+btnToggle?.addEventListener('click', () => {
+  const theme = document.documentElement.getAttribute('data-theme');
+  const newTheme = theme === 'dark' ? 'light' : 'dark';
+  
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme-preference', newTheme);
+  actualizarIcono(newTheme);
+});
+
+
+// ─── 2. VALIDACIÓN EN TIEMPO REAL DEL FORMULARIO (JOSÉ) ──────
+const campos = ['nombre', 'email', 'celular', 'tipoConsulta', 'descripcion'];
+
+// Mensajes de error específicos por campo
+const mensajesError = {
+  nombre: 'El nombre es obligatorio y debe tener al menos 3 caracteres.',
+  email: 'Ingresá un email válido (ej: nombre@dominio.com).',
+  celular: 'El celular debe tener el formato 11-1234-5678.',
+  tipoConsulta: 'Seleccioná un tipo de consulta.',
+  descripcion: 'La descripción es obligatoria y debe tener al menos 10 caracteres.'
+};
+
+// Reglas de validación por campo
+function esValido(campo) {
+  const valor = campo.value.trim();
+  switch (campo.id) {
+    case 'nombre':
+      return valor.length >= 3;
+    case 'email':
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
+    case 'celular':
+      return /^\d{2}-\d{4}-\d{4}$/.test(valor);
+    case 'tipoConsulta':
+      return valor !== '' && valor !== 'Seleccioná una opción';
+    case 'descripcion':
+      return valor.length >= 10;
+    default:
+      return true;
+  }
+}
+
+// Valida un campo individual y actualiza clases + feedback
+function validarCampo(campo) {
+  const valido = esValido(campo);
+  const feedback = campo.parentElement.querySelector('.invalid-feedback');
+  
+  campo.classList.remove('is-valid', 'is-invalid');
+  campo.classList.add(valido ? 'is-valid' : 'is-invalid');
+  
+  if (feedback) {
+    feedback.textContent = valido ? '' : mensajesError[campo.id];
+  }
+  
+  actualizarBotonEnviar();
+  return valido;
+}
+
+// Revisa todos los campos y habilita/deshabilita el botón de envío
+function actualizarBotonEnviar() {
+  const btnEnviar = document.getElementById('btnEnviarConsulta');
+  const todosValidos = campos.every(id => {
+    const el = document.getElementById(id);
+    return el && esValido(el);
+  });
+  
+  if (btnEnviar) {
+    btnEnviar.disabled = !todosValidos;
+  }
+}
+
+// Listeners en cada campo para validación en tiempo real (input y blur)
+campos.forEach(campoId => {
+  const el = document.getElementById(campoId);
+  if (!el) return;
+  
+  el.addEventListener('input', () => validarCampo(el));
+  el.addEventListener('blur', () => validarCampo(el));
+});
+
+// Estado inicial: botón deshabilitado hasta que se complete el form
+document.addEventListener('DOMContentLoaded', actualizarBotonEnviar);
+
+
+// ─── 3. FUNCIONALIDAD EXISTENTE (Navbar, Scroll, Expediente) ─
+const siteNav = document.getElementById('siteNav');
 const backToTop = document.getElementById('backToTop');
 
 function updateScrollState() {
@@ -40,97 +138,36 @@ const observer = new IntersectionObserver((entries) => {
 
 sections.forEach(s => observer.observe(s));
 
-
-// ─── CONSULTA DE EXPEDIENTE ───────────────────────────────────
-//
-// El usuario ingresa su número de expediente judicial.
-// El JS devuelve un estado simulado.
-//
-// PRÓXIMO PASO (etapa backend):
-//   const res = await fetch(`/api/expediente/${numero}`);
-//   const data = await res.json();
-//
-// El endpoint FastAPI en src/routes/contact.py devolverá:
-// { numero, estado, etapa, ultima_actuacion, fecha }
-
-const expedienteInput   = document.getElementById('expedienteInput');
-const consultarBtn      = document.getElementById('consultarBtn');
+// Simulación de Consulta de Expediente (Se mantiene para el Sprint 3)
+const expedienteInput = document.getElementById('expedienteInput');
+const consultarBtn = document.getElementById('consultarBtn');
 const consultaResultado = document.getElementById('consultaResultado');
 
 const DEMO_EXPEDIENTES = {
-  '12345/2026': {
-    estado: 'EN TRÁMITE',
-    etapa:  'Audiencia preliminar',
-    ultima: 'Notificación de fecha de audiencia enviada al empleador.',
-    fecha:  '18/08/2026',
-  },
-  '98765/2025': {
-    estado: 'SENTENCIA FAVORABLE',
-    etapa:  'Ejecución de sentencia',
-    ultima: 'El juez ordenó el pago de la indemnización. Aguardamos cumplimiento del empleador.',
-    fecha:  '10/08/2026',
-  },
-  '11111/2024': {
-    estado: 'CONCILIACIÓN ACORDADA',
-    etapa:  'Homologación',
-    ultima: 'Acuerdo firmado en el SECLO. En proceso de homologación judicial.',
-    fecha:  '05/08/2026',
-  },
+  '12345/2026': { estado: 'EN TRÁMITE', etapa: 'Audiencia preliminar', ultima: 'Notificación enviada.', fecha: '18/08/2026' },
+  '98765/2025': { estado: 'SENTENCIA FAVORABLE', etapa: 'Ejecución', ultima: 'Pago ordenado.', fecha: '10/08/2026' }
 };
-
-function renderResultado(numero, data) {
-  consultaResultado.className = 'la-consulta-resultado la-success';
-  consultaResultado.innerHTML = `
-    <span class="la-estado-badge">${data.estado}</span>
-    <p style="font-size:13px; margin:0 0 6px; color:var(--la-white)">
-      <strong>Expte. ${numero}</strong> · Etapa: ${data.etapa}
-    </p>
-    <p style="font-size:12px; margin:0 0 6px; color:rgba(255,255,255,.65)">${data.ultima}</p>
-    <p style="font-size:10px; margin:0; color:rgba(255,255,255,.4)">Última actualización: ${data.fecha}</p>
-  `;
-}
-
-function renderError(msg) {
-  consultaResultado.className = 'la-consulta-resultado la-error';
-  consultaResultado.textContent = msg;
-}
 
 consultarBtn?.addEventListener('click', () => {
   const numero = expedienteInput.value.trim();
-
   if (!numero || numero.length < 4) {
-    renderError('Ingresá un número de expediente válido (ej: 12345/2026).');
+    consultaResultado.className = 'la-consulta-resultado la-error';
+    consultaResultado.textContent = 'Ingresá un número de expediente válido.';
     return;
   }
-
   consultaResultado.className = 'la-consulta-resultado';
-  consultaResultado.innerHTML = '<p style="color:rgba(255,255,255,.45); font-size:12px">Consultando el sistema judicial...</p>';
-
+  consultaResultado.innerHTML = '<p style="color:var(--la-text-secondary); font-size:14px">Consultando...</p>';
+  
   setTimeout(() => {
     const data = DEMO_EXPEDIENTES[numero];
     if (data) {
-      renderResultado(numero, data);
+      consultaResultado.className = 'la-consulta-resultado la-success';
+      consultaResultado.innerHTML = `<p><strong>Expte. ${numero}</strong>: ${data.estado} (${data.etapa})</p>`;
     } else {
-      renderResultado(numero, {
-        estado: 'EN TRÁMITE',
-        etapa:  'Instrucción del expediente',
-        ultima: 'Demo — en la etapa backend este resultado vendrá de FastAPI. Tu expediente fue localizado en el sistema.',
-        fecha:  new Date().toLocaleDateString('es-AR'),
-      });
+      consultaResultado.className = 'la-consulta-resultado la-error';
+      consultaResultado.textContent = 'No se encontró el expediente.';
     }
   }, 700);
 });
 
 expedienteInput?.addEventListener('keydown', e => { if (e.key === 'Enter') consultarBtn.click(); });
-
-
-// ─── FORMULARIO DE CONTACTO ───────────────────────────────────
-const contactForm = document.getElementById('contactForm');
-const formMessage  = document.getElementById('formMessage');
-
-contactForm?.addEventListener('submit', event => {
-  event.preventDefault();
-  if (!contactForm.checkValidity()) { contactForm.reportValidity(); return; }
-  formMessage.textContent = '✓ Consulta recibida. Te respondemos a la brevedad. Primera consulta sin cargo.';
-  contactForm.reset();
-});
